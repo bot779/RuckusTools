@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#cat /etc/airespider-default/country-list.xml | grep id | awk -F"\"" '{print $6","$4","$8"\n" "\t""2.4GHz:"$10"\n" "\t""5GHz:"$12"\n" "\t""5GHz DFS:"$14"\n" "allow-dfs-channels="$18"\n" "allow-11na-40="$24"\n"}'
 XML_PATH=./country-list.xml
 COUNTRY_SET=./countries
 
@@ -35,13 +34,11 @@ mismatch_detail_message_non_dfs_channels_11a=""
 mismatch_detail_message_dfs_channels_11a=""
 
 countries=$(cut -d ',' -f1 ${COUNTRY_SET})
-#
 for country in ${countries}
 do
 # Get parameters from Utililty
   res_utility=$(./regdomain -F -c "${country}")
 # Get parameters from XML
-#  res_xml=$(grep "${country}" ${XML_PATH} | awk -F"\"" '{print toupper($6)	","$4","$8"\n" "\t""2.4GHz:         "$10"\n" "\t""5GHz:           "$12"\n" "\t""5GHz DFS:       "$14"\n" "allow-dfs-channels="$18"\n" "allow-11na-40="$24"\n"}' | sed '5,6d')
   res_xml=$(grep "${country}" ${XML_PATH} | awk -F"\"" '{print toupper($6)","$4","$8":"$10":"$12":"$14}')
 
   found_mismatch=0
@@ -209,8 +206,7 @@ fi
 echo "*****************************************************************************"
 echo ""
 
-#printf 'Country: %s\n' $(cat ./countries)
-
+# Used for creating input countries
 #cat ${XML_PATH} | grep id | awk -F"\"" '{print $4","}' > countries
 
 exit 0
