@@ -2,7 +2,6 @@
 
 #http://www.python-excel.org/
 
-
 from parser import file_parser as FP
 
 """
