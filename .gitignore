@@ -4,5 +4,3 @@ regdmn_chan.h~
 .project
 .pydevproject
 .metadata/
-__init__.pyc
-file_parser.pyc
