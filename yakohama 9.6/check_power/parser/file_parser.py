@@ -4,9 +4,10 @@ import xlrd
 
 XLS_filename = "Country matrix 2012 07 17.xls"
 XLS_start_rowx = 10
-XLS_start_colx = 34
+XLS_start_colx = 37
+XLS_device_name = ("7321", "7351", "ZF7363", "7982", "7761-CM", "7762-Int", "7782", "7782-N", "7782-S")
+XLS_device_start_index = (XLS_start_colx, XLS_start_colx + 4, XLS_start_colx + 8, XLS_start_colx + 20, XLS_start_colx + 24, XLS_start_colx + 28, XLS_start_colx + 32, XLS_start_colx + 36, XLS_start_colx + 40)
 Header_filename = "regdmn_chan.h"
-
 
 class FileParser:    
 # privte:
@@ -45,6 +46,7 @@ class FileParser:
         self._closeXLS()
 
     def compare(self):
+        mismatch_count = 0
         if self.is_open is not True:
             return False
         
@@ -62,8 +64,10 @@ class FileParser:
                 if line.find("regdmn_pwr_table[NUM_REGDMNS]") is not -1:
                     header_data_begin = True
                     lino_begin = lino
+# Fails to find the start point of parsing header file
+        if header_data_begin is not True:
+            return -1
 
-        lino_begin = lino_begin + 2
 # Useful data are found, start to parse them
         country_name = ""
         country_name_XLS = ""
@@ -90,25 +94,32 @@ class FileParser:
                         lino_XLS = lino_XLS + 1
                         country_name_XLS = self.XLS_sheet.cell(XLS_start_rowx + lino_XLS, 1).value
 
-#                if country_name != country_name_XLS:
-#                    print "Different {0}, {1}".format(country_name, country_name_XLS)
+                if country_name != country_name_XLS:
+                    print "Different country name: {0}/{1}".format(country_name, country_name_XLS)
+                    return -1
 # Compare each data in the two files
+                mismatch_exist = False
+                need_print_title = True
                 for i in range(36):
-                    need_print_title = True
-                    power_data_ele_XLS = int(self.XLS_sheet.cell(XLS_start_rowx + lino_XLS, XLS_start_rowx + i).value)
+                    device_name_index = int(i / 4)
+                    device_index = i % 4
+                    
+                    power_data_ele_XLS_tmp = self.XLS_sheet.cell(XLS_start_rowx + lino_XLS, XLS_device_start_index[device_name_index] + device_index).value
+# Consider the special case of Non-use
+                    if power_data_ele_XLS_tmp == "":
+                        power_data_ele_XLS_tmp = -128
+                    power_data_ele_XLS = int(power_data_ele_XLS_tmp)
                     if power_data[i] != power_data_ele_XLS:
-# Consider the special case
-                        if power_data[i] == -128 && power_data_ele_XLS == None:
-                            continue                
+                        mismatch_count = mismatch_count + 1
                         if need_print_title is True:
-                            print "{0}: \n".format(country_name)
-                            need_print_title = False                            
-                        
+                            print "{0}:".format(country_name)
+                            need_print_title = False
+                        if mismatch_exist is False:
+                           mismatch_exist = True  
+
+                        print "Dev: ({0}, {1}), XLS: {2}, H: {3}".format(XLS_device_name[device_name_index], device_index, power_data_ele_XLS, power_data[i])
+                if mismatch_exist is True:    
+                    print "***********\n"
                     
                 lino_XLS = lino_XLS + 1
-                
-                print country_name
-                print country_name_XLS
-#                print power_data
-                                
-#            print("Line : {0}, {1}".format(lino, line))    
+                return mismatch_count
