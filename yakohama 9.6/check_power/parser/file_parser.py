@@ -2,7 +2,7 @@
 
 import xlrd
 
-XLS_filename = "Country matrix 2012 07 17.xls"
+XLS_filename = "Country matrix.xls"
 XLS_start_rowx = 10
 XLS_start_colx = 37
 XLS_device_name = ("7321", "7351", "ZF7363", "7982", "7761-CM", "7762-Int", "7782", "7782-N", "7782-S")
@@ -45,8 +45,9 @@ class FileParser:
         self._closeHeader
         self._closeXLS()
 
-    def compare(self):
+    def compare(self, show_detail = True):
         mismatch_count = 0
+        mismatch_list = ""
         if self.is_open is not True:
             return False
         
@@ -100,6 +101,13 @@ class FileParser:
 # Compare each data in the two files
                 mismatch_exist = False
                 need_print_title = True
+                XLS_power_list = ""
+                power_list = ""
+                if show_detail == True:
+                    print "Country: {0}".format(country_name)
+                    power_list = "H:"
+                    XLS_power_list = "XLS:"
+                
                 for i in range(36):
                     device_name_index = int(i / 4)
                     device_index = i % 4
@@ -109,6 +117,14 @@ class FileParser:
                     if power_data_ele_XLS_tmp == "":
                         power_data_ele_XLS_tmp = -128
                     power_data_ele_XLS = int(power_data_ele_XLS_tmp)
+                    
+                    if show_detail == True:
+                        if device_index == 0:
+                            power_list = power_list + " |"
+                            XLS_power_list = XLS_power_list + " |"                            
+                        power_list = power_list + " {0}".format(power_data[i])
+                        XLS_power_list = XLS_power_list + " {0}".format(power_data_ele_XLS)
+                    
                     if power_data[i] != power_data_ele_XLS:
                         mismatch_count = mismatch_count + 1
                         if need_print_title is True:
@@ -116,10 +132,17 @@ class FileParser:
                             need_print_title = False
                         if mismatch_exist is False:
                            mismatch_exist = True  
-
-                        print "Dev: ({0}, {1}), XLS: {2}, H: {3}".format(XLS_device_name[device_name_index], device_index, power_data_ele_XLS, power_data[i])
-                if mismatch_exist is True:    
-                    print "***********\n"
+                        if show_detail == False:
+                            print "Dev: ({0}, {1}), XLS: {2}, H: {3}".format(XLS_device_name[device_name_index], device_index, power_data_ele_XLS, power_data[i])
+                if show_detail == False:
+                    if mismatch_exist is True:
+                        mismatch_list = mismatch_list + " " + country_name
+                        print "***********\n"
+                else:
+                    if mismatch_exist is True:
+                        mismatch_list = mismatch_list + " " + country_name
+                    print XLS_power_list
+                    print power_list
                     
                 lino_XLS = lino_XLS + 1
-                return mismatch_count
+        return (mismatch_count, mismatch_list)
