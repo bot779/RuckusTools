@@ -20,9 +20,10 @@ field_name_code="(Code) "
 field_name_bg_channels="(2.4GHz) "
 field_name_non_dfs_channels_11a="(5GHz NON-DFS) "
 field_name_dfs_channels_11a="(5GHz DFS) "
+field_name_allow_dfs_channels="(Allowed 5GHz DFS)"
 
-show_message=0
-show_detail_mismatch_messgae=1
+show_message=1
+show_detail_mismatch_message=1
 found_mismatch=0
 mismatch_counter=0
 mismatch_message=""
@@ -32,6 +33,7 @@ mismatch_detail_message_code=""
 mismatch_detail_message_bg_channels=""
 mismatch_detail_message_non_dfs_channels_11a=""
 mismatch_detail_message_dfs_channels_11a=""
+mismatch_country_list=""
 
 countries=$(cut -d ',' -f1 ${COUNTRY_SET})
 for country in ${countries}
@@ -43,7 +45,7 @@ do
 
   found_mismatch=0
   mismatch_message=""
-  if [ "$show_detail_mismatch_messgae" != "0" ]; then
+  if [ "$show_detail_mismatch_message" != "0" ]; then
     mismatch_detail_message_full_name=""
     mismatch_detail_message_name=""
     mismatch_detail_message_code=""
@@ -69,7 +71,7 @@ do
 
     if [ "$res_utility_bg_channels" != "$res_xml_bg_channels" ]; then
       mismatch_message="${mismatch_message}${field_name_bg_channels}"
-      if [ "$show_detail_mismatch_messgae" != "0" ]; then
+      if [ "$show_detail_mismatch_message" != "0" ]; then
         mismatch_detail_message_bg_channels=$(echo " ${field_name_bg_channels} untility: ${res_utility_bg_channels} ; xml: ${res_xml_bg_channels}")
       fi
     fi
@@ -89,7 +91,7 @@ do
     fi
 
     mismatch_message="${mismatch_message}${field_name_dfs_channels_11a}"
-    if [ "$show_detail_mismatch_messgae" != "0" ]; then
+    if [ "$show_detail_mismatch_message" != "0" ]; then
       mismatch_detail_message_dfs_channels_11a=$(echo " ${field_name_dfs_channels_11a} untility: ${res_utility_dfs_channels_11a} ; xml: ${res_xml_dfs_channels_11a}")
     fi     
   fi
@@ -115,7 +117,7 @@ do
     fi
 
     mismatch_message="${mismatch_message}${field_name_non_dfs_channels_11a}"
-    if [ "$show_detail_mismatch_messgae" != "0" ]; then
+    if [ "$show_detail_mismatch_message" != "0" ]; then
       mismatch_detail_message_non_dfs_channels_11a=$(echo " ${field_name_non_dfs_channels_11a} untility: ${res_utility_non_dfs_channels_11a} ; xml: ${res_xml_non_dfs_channels_11a}")
     fi       
   fi
@@ -140,39 +142,55 @@ do
 
     if [ "$res_utility_full_name" != "$res_xml_full_name" ]; then
       mismatch_message="${mismatch_message}${field_name_full_name}"
-      if [ "$show_detail_mismatch_messgae" != "0" ]; then
+      if [ "$show_detail_mismatch_message" != "0" ]; then
         mismatch_detail_message_full_name=$(echo " ${field_name_full_name} untility: ${res_utility_full_name} ; xml: ${res_xml_full_name}")
       fi
     fi
     if [ "$res_utility_name" != "$res_xml_name" ]; then
       mismatch_message="${mismatch_message}${field_name_name}"
-      if [ "$show_detail_mismatch_messgae" != "0" ]; then
+      if [ "$show_detail_mismatch_message" != "0" ]; then
         mismatch_detail_message_name=$(echo " ${field_name_name} untility: ${res_utility_name} ; xml: ${res_xml_name}")
       fi
     fi
     if [ "$res_utility_code" != "$res_xml_code" ]; then
       mismatch_message="${mismatch_message}${field_name_code}"
-      if [ "$show_detail_mismatch_messgae" != "0" ]; then
+      if [ "$show_detail_mismatch_message" != "0" ]; then
         mismatch_detail_message_code=$(echo " ${field_name_code} untility: ${res_utility_code} ; xml: ${res_xml_code}")
       fi
     fi
   fi
 
-  if [ "$show_message" = "1" ]; then
-    echo "$res_utility_country_id"
-    echo "$res_xml_country_id"
-    echo "$res_utility_bg_channels"
-    echo "$res_xml_bg_channels"
-    echo "$res_utility_non_dfs_channels_11a"
-    echo "$res_xml_non_dfs_channels_11a"
-    echo "$res_utility_dfs_channels_11a"
-    echo "$res_xml_dfs_channels_11a"
-  fi
+  if [ "$show_message" == "1" ]; then
+    echo " ${field_name_full_name},${field_name_name},${field_name_code} untility: ${res_utility_country_id} ; xml: ${res_xml_country_id}"
+    echo " ${field_name_bg_channels} untility: ${res_utility_bg_channels} ; xml: ${res_xml_bg_channels}"
+    echo " ${field_name_non_dfs_channels_11a} untility: ${res_utility_non_dfs_channels_11a} ; xml: ${res_xml_non_dfs_channels_11a}"
+    echo " ${field_name_dfs_channels_11a} untility: ${res_utility_dfs_channels_11a} ; xml: ${res_xml_dfs_channels_11a}"
+    res_utility_allow_dfs_channels="FALSE"
+    if [ "${res_utility_non_dfs_channels_11a}" != "" ] || [ "${res_utility_dfs_channels_11a}" != "" ]; then
+      res_utility_allow_dfs_channels="TRUE"
+    fi
+    res_xml_allow_dfs_channels="FALSE"
+    if [ "${res_xml_non_dfs_channels_11a}" != "" ] || [ "${res_xml_dfs_channels_11a}" != "" ]; then
+      res_xml_allow_dfs_channels="TRUE"
+    fi
+    echo " ${field_name_allow_dfs_channels} untility: ${res_utility_allow_dfs_channels} ; xml: ${res_xml_allow_dfs_channels}"
+    if [ "$found_mismatch" == "1" ]; then
+      mismatch_country_list="${mismatch_country_list}${res_utility_name} "
+    fi
+    echo "=================================================="
 
-  if [ "$found_mismatch" == "1" ]; then
+#    echo "$res_utility_country_id"
+#    echo "$res_xml_country_id"
+#    echo "$res_utility_bg_channels"
+#    echo "$res_xml_bg_channels"
+#    echo "$res_utility_non_dfs_channels_11a"
+#    echo "$res_xml_non_dfs_channels_11a"
+#    echo "$res_utility_dfs_channels_11a"
+#    echo "$res_xml_dfs_channels_11a"
+  elif [ "$found_mismatch" == "1" ]; then
     echo ""
     echo "Mismatch in ${res_utility_full_name}. Different field: ${mismatch_message}"
-    if [ "$show_detail_mismatch_messgae" != "0" ]; then
+    if [ "$show_detail_mismatch_message" != "0" ]; then
       if [ "$mismatch_detail_message_full_name" != "" ]; then
         echo "$mismatch_detail_message_full_name"
       fi
@@ -202,6 +220,7 @@ if [ "$mismatch_counter" == 0 ]; then
   echo "No mismatch found !!!"
 else
   echo "There are totally ${mismatch_counter} mismatch(es) found !!!"
+  echo "The mismatch(es) country list: ${mismatch_country_list}"
 fi
 echo "*****************************************************************************"
 echo ""
