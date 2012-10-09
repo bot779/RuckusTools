@@ -163,7 +163,7 @@ do
   if [ "$show_message" == "1" ]; then
     echo " ${field_name_full_name},${field_name_name},${field_name_code}"
     echo " untility: ${res_utility_country_id}"
-    echo " xml:      ${res_xml_country_id}"
+    echo " xml:      	${res_xml_country_id}"
     echo " ${field_name_bg_channels}"
     echo " untility: ${res_utility_bg_channels}"
     echo " xml:      ${res_xml_bg_channels}"
