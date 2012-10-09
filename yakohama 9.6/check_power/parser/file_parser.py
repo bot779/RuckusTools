@@ -105,7 +105,7 @@ class FileParser:
                 power_list = ""
                 if show_detail == True:
                     print "Country: {0}".format(country_name)
-                    power_list = "H:"
+                    power_list = "H:  "
                     XLS_power_list = "XLS:"
                 
                 for i in range(36):
