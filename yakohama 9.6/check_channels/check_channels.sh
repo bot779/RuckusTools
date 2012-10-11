@@ -21,6 +21,7 @@ field_name_bg_channels="(2.4GHz) "
 field_name_non_dfs_channels_11a="(5GHz NON-DFS) "
 field_name_dfs_channels_11a="(5GHz DFS) "
 field_name_allow_dfs_channels="(Allowed 5GHz DFS)"
+field_name_allow_lma_40="(Allowed LMA 40)"
 
 show_message=1
 show_detail_mismatch_message=1
@@ -33,6 +34,7 @@ mismatch_detail_message_code=""
 mismatch_detail_message_bg_channels=""
 mismatch_detail_message_non_dfs_channels_11a=""
 mismatch_detail_message_dfs_channels_11a=""
+mismatch_detail_message_allow_lma_40=""
 mismatch_country_list=""
 
 countries=$(cut -d ',' -f1 ${COUNTRY_SET})
@@ -41,7 +43,7 @@ do
 # Get parameters from Utililty
   res_utility=$(./regdomain -F -c "${country}")
 # Get parameters from XML
-  res_xml=$(grep "${country}" ${XML_PATH} | awk -F"\"" '{print toupper($6)","$4","$8":"$10":"$12":"$14}')
+  res_xml=$(grep "${country}" ${XML_PATH} | awk -F"\"" '{print toupper($6)","$4","$8":"$10":"$12":"$14":"toupper($24)}')
 
   found_mismatch=0
   mismatch_message=""
@@ -160,6 +162,26 @@ do
     fi
   fi
 
+# Row 6
+  value_utility_allow_lma_40=$(./regdomain -c "${country}" | grep "HT40")
+  res_utility_allow_lma_40="FALSE" 
+  if [ "$value_utility_allow_lma_40" != "" ]; then
+    res_utility_allow_lma_40="TRUE" 
+  fi
+  res_xml_allow_lma_40=$(echo ${res_xml} | cut -d':' -f5)
+# Check both data in Row 6
+  if [ "$res_utility_allow_lma_40" != "$res_xml_allow_lma_40" ]; then
+    if [ "$found_mismatch" == 0 ]; then
+      found_mismatch=1
+      mismatch_counter=$(($mismatch_counter+1))
+    fi
+
+    mismatch_message="${mismatch_message}${field_name_allow_lma_40}"
+    if [ "$show_detail_mismatch_message" != "0" ]; then
+      mismatch_detail_message_allow_lma_40=$(echo " ${field_name_allow_lma_40} untility: ${res_utility_allow_lma_40} ; xml: ${res_xml_allow_lma_40}")
+    fi       
+  fi
+
   if [ "$show_message" == "1" ]; then
     echo " ${field_name_full_name},${field_name_name},${field_name_code}"
     echo " untility: ${res_utility_country_id}"
@@ -184,6 +206,9 @@ do
     echo " ${field_name_allow_dfs_channels}"
     echo " untility: ${res_utility_allow_dfs_channels}"
     echo " xml:      ${res_xml_allow_dfs_channels}"
+    echo " ${field_name_allow_lma_40}"
+    echo " untility: ${res_utility_allow_lma_40}"
+    echo " xml:      ${res_xml_allow_lma_40}"
     if [ "$found_mismatch" == "1" ]; then
       mismatch_country_list="${mismatch_country_list}${res_utility_name} "
     fi
