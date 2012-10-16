@@ -1,0 +1,16 @@
+*******************************
+** Description of file usage **
+*******************************
+check_powers.py
+  The python script to run the comparison
+
+file_parser.py
+  The python script to parse XML and header files and then compare the difference
+
+
+********************
+** How to Run     **
+********************
+
+$ ./check_powers.py
+

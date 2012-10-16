@@ -21,7 +21,7 @@ field_name_bg_channels="(2.4GHz) "
 field_name_non_dfs_channels_11a="(5GHz NON-DFS) "
 field_name_dfs_channels_11a="(5GHz DFS) "
 field_name_allow_dfs_channels="(Allowed 5GHz DFS)"
-field_name_allow_lma_40="(Allowed LMA 40)"
+field_name_allow_lma_40="(Allowed HT40)"
 
 show_message=1
 show_detail_mismatch_message=1

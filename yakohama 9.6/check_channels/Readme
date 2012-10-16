@@ -1,0 +1,16 @@
+*******************************
+** Description of file usage **
+*******************************
+check_channels.sh 
+  The shell script to run the comparison
+
+countries
+  The list of country name to be compared.
+
+
+********************
+** How to Run     **
+********************
+
+$ bash ./check_channels.sh
+
