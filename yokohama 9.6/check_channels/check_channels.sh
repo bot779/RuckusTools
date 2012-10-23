@@ -185,7 +185,7 @@ do
   if [ "$show_message" == "1" ]; then
     echo " ${field_name_full_name},${field_name_name},${field_name_code}"
     echo " untility: ${res_utility_country_id}"
-    echo " xml:      	${res_xml_country_id}"
+    echo " xml:      ${res_xml_country_id}"
     echo " ${field_name_bg_channels}"
     echo " untility: ${res_utility_bg_channels}"
     echo " xml:      ${res_xml_bg_channels}"
@@ -196,11 +196,11 @@ do
     echo " untility: ${res_utility_dfs_channels_11a}"
     echo " xml:      ${res_xml_dfs_channels_11a}"
     res_utility_allow_dfs_channels="FALSE"
-    if [ "${res_utility_non_dfs_channels_11a}" != "" ] || [ "${res_utility_dfs_channels_11a}" != "" ]; then
+    if [ "${res_utility_dfs_channels_11a}" != "" ]; then
       res_utility_allow_dfs_channels="TRUE"
     fi
     res_xml_allow_dfs_channels="FALSE"
-    if [ "${res_xml_non_dfs_channels_11a}" != "" ] || [ "${res_xml_dfs_channels_11a}" != "" ]; then
+    if [ "${res_xml_dfs_channels_11a}" != "" ]; then
       res_xml_allow_dfs_channels="TRUE"
     fi
     echo " ${field_name_allow_dfs_channels}"
